@@ -34,6 +34,7 @@
                                             <th>Tipo Hosting</th>
                                             <th>IP Address</th>
                                             <th>Data Creazione</th>
+                                            <th>Scadenza</th>
                                             <th>Azioni</th>
                                         </tr>
                                     </thead>
@@ -67,9 +68,15 @@
                                                 <td><?php echo ucfirst($website['hosting_type']); ?></td>
                                                 <td><?php echo $website['ip_address'] ?: 'N/A'; ?></td>
                                                 <td>
-                                                    <?php 
-                                                    echo $website['created'] ? 
-                                                        date('d/m/Y', strtotime($website['created'])) : 'N/A'; 
+                                                    <?php
+                                                    echo $website['created'] ?
+                                                        date('d/m/Y', strtotime($website['created'])) : 'N/A';
+                                                    ?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    echo isset($website['expires']) && $website['expires'] ?
+                                                        date('d/m/Y', strtotime($website['expires'])) : 'N/A';
                                                     ?>
                                                 </td>
                                                 <td>
