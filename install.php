@@ -42,6 +42,20 @@ if (!$CI->db->table_exists(db_prefix() . 'plesk_api_logs')) {
     ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
 }
 
+// Tabella per i server Plesk configurati
+if (!$CI->db->table_exists(db_prefix() . 'plesk_servers')) {
+    $CI->db->query('CREATE TABLE `' . db_prefix() . 'plesk_servers` (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `name` varchar(100) NOT NULL,
+        `url` varchar(255) NOT NULL,
+        `username` varchar(100) NOT NULL,
+        `password` varchar(255) NOT NULL,
+        `ssl_verify` tinyint(1) DEFAULT 1,
+        `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
+}
+
 // Inserimento opzioni di default
 $default_options = [
     'plesk_api_url' => '',
@@ -51,6 +65,7 @@ $default_options = [
     'plesk_cache_duration' => '30',
     'plesk_auto_sync' => '0',
     'plesk_debug_mode' => '0',
+    'plesk_default_server_id' => '1',
     'plesk_module_version' => PLESK_INTEGRATION_VERSION
 ];
 

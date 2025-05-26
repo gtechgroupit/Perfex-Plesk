@@ -87,13 +87,29 @@ class Plesk_integration extends AdminController
         }
 
         if ($this->input->post()) {
-            $settings = $this->input->post();
-            
-            // Salva le impostazioni
+            $settings = $this->input->post(null, true);
+
+            // Nuovo server
+            if (!empty($settings['new_server_name']) && !empty($settings['new_server_url'])) {
+                $server_data = [
+                    'name'       => $settings['new_server_name'],
+                    'url'        => $settings['new_server_url'],
+                    'username'   => $settings['new_server_username'],
+                    'password'   => $settings['new_server_password'],
+                    'ssl_verify' => isset($settings['new_server_ssl']) ? 1 : 0,
+                ];
+                $this->plesk_integration_model->add_server($server_data);
+            }
+
+            // Opzioni generiche
             foreach ($settings as $key => $value) {
                 if (strpos($key, 'plesk_') === 0) {
                     update_option($key, $value);
                 }
+            }
+
+            if (isset($settings['plesk_default_server_id'])) {
+                update_option('plesk_default_server_id', (int)$settings['plesk_default_server_id']);
             }
 
             // Test connessione
@@ -112,6 +128,7 @@ class Plesk_integration extends AdminController
         }
 
         $data['title'] = 'Impostazioni Plesk';
+        $data['servers'] = $this->plesk_integration_model->get_servers();
         $this->load->view('admin/plesk_integration/settings', $data);
     }
 }
