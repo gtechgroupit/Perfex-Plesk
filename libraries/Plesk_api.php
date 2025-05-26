@@ -9,13 +9,37 @@ class Plesk_api
     private $plesk_password;
     private $ssl_verify;
 
-    public function __construct()
+    public function __construct($params = [])
     {
         $this->CI = &get_instance();
-        $this->plesk_url = get_option('plesk_api_url');
-        $this->plesk_username = get_option('plesk_api_username');
-        $this->plesk_password = get_option('plesk_api_password');
-        $this->ssl_verify = get_option('plesk_ssl_verify') === '1';
+        $this->CI->load->model('plesk_integration_model');
+
+        $server_id = isset($params['server_id']) ? (int)$params['server_id'] : (int)get_option('plesk_default_server_id');
+        $server    = $this->CI->plesk_integration_model->get_server($server_id);
+
+        if ($server) {
+            $this->plesk_url      = $server['url'];
+            $this->plesk_username = $server['username'];
+            $this->plesk_password = $server['password'];
+            $this->ssl_verify     = (bool)$server['ssl_verify'];
+        } else {
+            // retro compatibilità con opzioni precedenti
+            $this->plesk_url      = get_option('plesk_api_url');
+            $this->plesk_username = get_option('plesk_api_username');
+            $this->plesk_password = get_option('plesk_api_password');
+            $this->ssl_verify     = get_option('plesk_ssl_verify') === '1';
+        }
+    }
+
+    public function set_server($server_id)
+    {
+        $server = $this->CI->plesk_integration_model->get_server($server_id);
+        if ($server) {
+            $this->plesk_url      = $server['url'];
+            $this->plesk_username = $server['username'];
+            $this->plesk_password = $server['password'];
+            $this->ssl_verify     = (bool)$server['ssl_verify'];
+        }
     }
 
     /**
